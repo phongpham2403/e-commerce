@@ -1,5 +1,6 @@
 "use client";
 
+import { createCheckoutSession } from "@/actions/stripe";
 import { formatPrice } from "@/lib/utils";
 import {
   useCartStore,
@@ -30,10 +31,7 @@ const CartItem = ({ item }: { item: CartItemType }) => {
     >
       <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border">
         <Image
-          src={
-            item.image ||
-            "https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482752AXp/anh-mo-ta.png"
-          }
+          src={item.image}
           alt={item.title}
           fill
           className="object-cover"
@@ -127,6 +125,8 @@ const Cart = () => {
     }
     setLoadingProceed(true);
 
+    const checkoutUrl = await createCheckoutSession(cartId);
+
     try {
       const anyWindow = window as any;
 
@@ -138,6 +138,8 @@ const Cart = () => {
         });
       }
     } catch (e) {}
+
+    window.location.href = checkoutUrl;
 
     setLoadingProceed(false);
   };
